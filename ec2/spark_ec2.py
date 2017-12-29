@@ -583,17 +583,19 @@ def launch_cluster(conn, opts, cluster_name):
             device.size = opts.ebs_vol_size
             device.volume_type = opts.ebs_vol_type
             device.delete_on_termination = True
-            block_map["/dev/sd" + chr(ord('s') + i)] = device
+            block_map["/dev/xvd" + chr(ord('s') + i)] = device
+            print("/dev/xvd" + chr(ord('s') + i) + " is the device!!!!!!!!")
 
-    # ceate a block map for the master 
-    master_block_map = BlockDeviceMapping()        
+    # ceate a block map for the master
+    master_block_map = BlockDeviceMapping()
     if opts.ebs_master_vol_size > 0:
         for i in range(opts.ebs_vol_num):
             device = EBSBlockDeviceType()
             device.size = opts.ebs_master_vol_size
             device.volume_type = opts.ebs_vol_type
             device.delete_on_termination = False
-            master_block_map["/dev/sd" + chr(ord('s') + i)] = device
+            master_block_map["/dev/xvd" + chr(ord('s') + i)] = device
+            print("/dev/xvd" + chr(ord('s') + i) + " is the device!!!!!!!!")
 
     # AWS ignores the AMI-specified block device mapping for M3 (see SPARK-3342).
     if opts.instance_type.startswith('m3.'):
@@ -601,8 +603,9 @@ def launch_cluster(conn, opts, cluster_name):
             dev = BlockDeviceType()
             dev.ephemeral_name = 'ephemeral%d' % i
             # The first ephemeral drive is /dev/sdb.
-            name = '/dev/sd' + string.letters[i + 1]
+            name = '/dev/xvd' + string.letters[i + 1]
             block_map[name] = dev
+            print('/dev/xvd' + string.letters[i + 1]+ " is the device!!!!!!!!")
 
     # Launch slaves
     if opts.spot_price is not None:
